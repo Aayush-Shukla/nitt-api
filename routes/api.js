@@ -5,7 +5,6 @@ const router=express.Router()
 const Student=require('../models/student')
 const { response } = require("express")
 
-// const { request } = require("express")
 
 router.get('/',async (req,res)=>{
     try{
@@ -61,10 +60,26 @@ router.post('/',async (req,res)=>{
     }
 })
 
+router.get('/search/:key',async (req,res)=>{
+    var key=req.params.key
+    console.log(req.params.key,new RegExp('/'+key+'/', "i"))
+
+    let list
+    
+        Student.find().or([{"name": new RegExp('.*'+key+'.*', "i")},{"rollNumber": new RegExp('.*'+key+'.*', "i")}]).then(result=>{
+            res.json(result)
+            
+        }).catch(err=>{
+            res.status(400).json({message:err.message})})
+
+
+  
+})
+
 
 router.delete('/:id',getStudent,async (req,res)=>{
     try{
-        await res.subscriber.remove()
+        await res.student.remove()
         res.json({message: "record deleted"})
     }catch(err){
         res.status(500).json({message:err.message})
